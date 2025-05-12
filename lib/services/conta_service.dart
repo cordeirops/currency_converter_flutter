@@ -15,37 +15,47 @@ class ContaService {
 
   Future<void> atualizarTodasCotacoes() async {
     try {
-
       final contas = await _firestore.collection('contas').get();
+
+      if (contas.docs.isEmpty) {
+        return;
+      }
 
       final moedas = contas.docs
           .map((doc) => doc['moeda'] as String)
+          .where((moeda) => moeda != 'BRL')
           .toSet()
           .toList();
 
-      final cotacoes = await _apiService.getCotacoes(moedas);
+      if (moedas.isEmpty) {
+        return;
+      }
 
+      final cotacoes = await _apiService.getCotacoes(moedas);
       final batch = _firestore.batch();
+      final timestamp = FieldValue.serverTimestamp();
 
       for (final doc in contas.docs) {
         final moeda = doc['moeda'] as String;
-        if (cotacoes.containsKey(moeda)) {
-          final saldoMoeda = doc['saldoMoeda'] as double;
-          final novoSaldoBRL = saldoMoeda * cotacoes[moeda]!;
+        if (moeda != 'BRL' && cotacoes.containsKey(moeda)) {
+          final saldoMoeda = (doc['saldoMoeda'] as num).toDouble();
+          final taxaConversao = cotacoes[moeda]!;
+          final novoSaldoBRL = saldoMoeda * taxaConversao;
 
           batch.update(doc.reference, {
             'saldoBRL': novoSaldoBRL,
-            'ultimaAtualizacao': FieldValue.serverTimestamp(),
+            'taxaConversao': taxaConversao,
+            'ultimaAtualizacao': timestamp,
           });
         }
       }
 
       await batch.commit();
     } catch (e) {
+      debugPrint('Erro ao atualizar cotações: $e');
       throw Exception('Falha ao atualizar cotações: $e');
     }
   }
-
 
   Stream<List<Conta>> getContas(String usuarioId) {
     try {
@@ -77,10 +87,21 @@ class ContaService {
         throw Exception('Usuário não autenticado');
       }
 
+      if (conta.moeda != 'BRL') {
+        final cotacoes = await _apiService.getCotacoes([conta.moeda]);
+        if (cotacoes.containsKey(conta.moeda)) {
+          final taxaConversao = cotacoes[conta.moeda]!;
+          conta = conta.copyWith(
+            saldoBRL: conta.saldoMoeda * taxaConversao,
+            taxaConversao: taxaConversao,
+          );
+        }
+      }
+
       await _firestore.collection('contas').add({
         ...conta.toFirestore(),
         'criadoEm': FieldValue.serverTimestamp(),
-        'atualizadoEm': FieldValue.serverTimestamp(),
+        'ultimaAtualizacao': FieldValue.serverTimestamp(),
       });
     } on FirebaseException catch (e) {
       debugPrint('Erro ao adicionar conta: ${e.code} - ${e.message}');
@@ -97,9 +118,20 @@ class ContaService {
         throw Exception('ID da conta inválido');
       }
 
+      if (conta.moeda != 'BRL') {
+        final cotacoes = await _apiService.getCotacoes([conta.moeda]);
+        if (cotacoes.containsKey(conta.moeda)) {
+          final taxaConversao = cotacoes[conta.moeda]!;
+          conta = conta.copyWith(
+            saldoBRL: conta.saldoMoeda * taxaConversao,
+            taxaConversao: taxaConversao,
+          );
+        }
+      }
+
       await _firestore.collection('contas').doc(conta.id).update({
         ...conta.toFirestore(),
-        'atualizadoEm': FieldValue.serverTimestamp(),
+        'ultimaAtualizacao': FieldValue.serverTimestamp(),
       });
     } on FirebaseException catch (e) {
       debugPrint('Erro ao atualizar conta: ${e.code} - ${e.message}');
@@ -138,6 +170,4 @@ class ContaService {
         return Exception('Erro no servidor: ${e.message}');
     }
   }
-
-
 }

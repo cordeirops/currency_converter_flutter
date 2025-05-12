@@ -1,1 +1,32 @@
-{"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"flutter-currency-convert-313b5","configurations":{"web":"1:719299027952:web:5561deea559e47a608b335"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "flutter-currency-convert-313b5",
+          "configurations": {
+            "web": "1:719299027952:web:5561deea559e47a608b335"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
