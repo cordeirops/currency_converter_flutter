@@ -1,3 +1,5 @@
+
+import 'package:currency_converter/widgets/app_footer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
@@ -49,78 +51,85 @@ class MenuPage extends StatelessWidget {
             ],
           ),
         ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 40.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.account_balance_wallet,
-                        size: 80,
-                        color: Colors.blue,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Olá, ${currentUser.email?.split('@').first ?? 'Usuário'}!',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 40.0),
+                        child: Column(
+                          children: [
+                            const Icon(
+                              Icons.account_balance_wallet,
+                              size: 80,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Olá, ${currentUser.email?.split('@').first ?? 'Usuário'}!',
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Text(
+                              'O que você deseja fazer hoje?',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const Text(
-                        'O que você deseja fazer hoje?',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black54,
+
+                      _buildMenuCard(
+                        context,
+                        title: 'Minhas Contas',
+                        icon: Icons.account_balance_wallet,
+                        description: 'Gerenciar suas contas em moedas estrangeiras',
+                        onTap: () {
+                          Navigator.pushNamed(context, '/contas');
+                        },
+                        color: Colors.indigo,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      _buildMenuCard(
+                        context,
+                        title: 'Cotações de Moedas',
+                        icon: Icons.currency_exchange,
+                        description: 'Visualizar cotações atualizadas das moedas',
+                        onTap: () {
+                          Navigator.pushNamed(context, '/cotacoes');
+                        },
+                        color: Colors.teal,
+                      ),
+
+                      const Padding(
+                        padding: EdgeInsets.only(top: 40.0),
+                        child: Text(
+                          'Cotações são atualizadas automaticamente a cada hora',
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            color: Colors.black54,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ],
                   ),
                 ),
-
-                _buildMenuCard(
-                  context,
-                  title: 'Minhas Contas',
-                  icon: Icons.account_balance_wallet,
-                  description: 'Gerenciar suas contas em moedas estrangeiras',
-                  onTap: () {
-                    Navigator.pushNamed(context, '/contas');
-                  },
-                  color: Colors.indigo,
-                ),
-
-                const SizedBox(height: 20),
-
-                _buildMenuCard(
-                  context,
-                  title: 'Cotações de Moedas',
-                  icon: Icons.currency_exchange,
-                  description: 'Visualizar cotações atualizadas das moedas',
-                  onTap: () {
-                    Navigator.pushNamed(context, '/cotacoes');
-                  },
-                  color: Colors.teal,
-                ),
-
-                const Padding(
-                  padding: EdgeInsets.only(top: 40.0),
-                  child: Text(
-                    'Cotações são atualizadas automaticamente a cada hora',
-                    style: TextStyle(
-                      fontStyle: FontStyle.italic,
-                      color: Colors.black54,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            const AppFooter(),
+          ],
         ),
       ),
     );

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/conta.dart';
 import '../services/auth_service.dart';
 import '../services/conta_service.dart';
+import '../widgets/app_footer.dart';
 import 'conta_form_page.dart';
 
 class ListaContasPage extends StatefulWidget {
@@ -247,6 +248,8 @@ class _ListaContasPageState extends State<ListaContasPage> {
                 },
               ),
             ),
+
+            const AppFooter(), // AppFooter adicionado aqui
           ],
         ),
       ),
@@ -267,6 +270,7 @@ class _ListaContasPageState extends State<ListaContasPage> {
       ),
     );
   }
+
 
   Widget _buildContaCard(BuildContext context, Conta conta) {
     final bool isReais = conta.moeda == 'BRL';

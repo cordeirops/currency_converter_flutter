@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/moeda.dart';
 import '../services/cotacao_service.dart';
+import '../widgets/app_footer.dart';
 
 class CotacoesPage extends StatefulWidget {
   const CotacoesPage({Key? key}) : super(key: key);
@@ -21,7 +22,7 @@ class _CotacoesPageState extends State<CotacoesPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final cotacaoService = Provider.of<CotacaoService>(context, listen: false);
-      cotacaoService.atualizarCotacoes().catchError((error) {
+      cotacaoService.carregarCotacoesFixas().catchError((error) {
         debugPrint('Erro ao buscar cotações iniciais: $error');
       });
     });
@@ -223,7 +224,7 @@ class _CotacoesPageState extends State<CotacoesPage> {
                     'AUD': Icons.monetization_on,
                     'CHF': Icons.monetization_on,
                   };
-                  
+
                   final Map<String, Color> moedasColors = {
                     'BRL': Colors.green,
                     'USD': Colors.blue,
@@ -234,7 +235,7 @@ class _CotacoesPageState extends State<CotacoesPage> {
                     'AUD': Colors.amber.shade800,
                     'CHF': Colors.teal,
                   };
-                  
+
                   return RefreshIndicator(
                     onRefresh: () => _atualizarCotacoes(context),
                     child: ListView.builder(
@@ -244,7 +245,7 @@ class _CotacoesPageState extends State<CotacoesPage> {
                         final moeda = moedas[index];
                         final IconData moedaIcon = moedasIcons[moeda.nome] ?? Icons.currency_exchange;
                         final Color moedaColor = moedasColors[moeda.nome] ?? Colors.blue;
-                        
+
                         return Card(
                           margin: const EdgeInsets.only(bottom: 16),
                           elevation: 3,
@@ -360,6 +361,7 @@ class _CotacoesPageState extends State<CotacoesPage> {
                 },
               ),
             ),
+            const AppFooter(),
           ],
         ),
       ),

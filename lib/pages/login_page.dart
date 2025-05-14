@@ -1,3 +1,4 @@
+import 'package:currency_converter/widgets/app_footer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         child: SafeArea(
-          child: Center(
+          child: Column(children: [ Expanded(child: Center(
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -219,6 +220,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
+          ),
+        ),
+    const AppFooter(),]
           ),
         ),
       ),
